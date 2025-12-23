@@ -1,0 +1,244 @@
+definitions:
+  DataResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/UsersList'
+        type: array
+      message:
+        default: ok
+        type: string
+      total:
+        type: integer
+    type: object
+  ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  LoginSuccessResponse:
+    properties:
+      access:
+        type: string
+      message:
+        default: ok
+        type: string
+      refresh:
+        type: string
+    type: object
+  ProfileResponse:
+    properties:
+      aadhar:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      message:
+        default: ok
+        type: string
+      user_name:
+        type: string
+    type: object
+  RefreshResponse:
+    properties:
+      access:
+        type: string
+      message:
+        default: ok
+        type: string
+    type: object
+  RegisterResponse:
+    properties:
+      message:
+        default: ok
+        type: string
+    type: object
+  UserLogin:
+    properties:
+      password:
+        type: string
+      user_name:
+        type: string
+    type: object
+  UserRegister:
+    properties:
+      aadhar:
+        type: string
+      confirm_password:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      user_name:
+        type: string
+    type: object
+  UsersList:
+    properties:
+      aadhar:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      user_name:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: This is a Go based backend for Assignment 1.
+  title: Aadhar Backend API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: validate credentials and generate JWT tokens (access and refresh)
+      parameters:
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LoginSuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Login API
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Registers new user
+      parameters:
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/UserRegister'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Register API
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refresh user's access token
+      parameters:
+      - description: JWT Refresh Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/RefreshResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Refresh API
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: Returns signed-in user's info
+      parameters:
+      - description: JWT Access Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ProfileResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Profile API
+  /get-data:
+    get:
+      consumes:
+      - application/json
+      description: Returns list of user info with pagination
+      parameters:
+      - description: Offset
+        in: query
+        name: offset
+        type: number
+      - description: Limit
+        in: query
+        name: limit
+        type: number
+      - description: Raw
+        in: query
+        name: raw
+        type: boolean
+      - description: JWT Access Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DataResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Data API
+swagger: "2.0"

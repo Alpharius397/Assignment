@@ -1,0 +1,352 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a Go based backend for Assignment 1.",
+    "title": "Aadhar Backend API",
+    "contact": {},
+    "version": "1.0"
+  },
+  "host": "localhost:8081",
+  "paths": {
+    "/login": {
+      "post": {
+        "description": "validate credentials and generate JWT tokens (access and refresh)",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "summary": "Login API",
+        "parameters": [
+          {
+            "description": "User Data",
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserLogin"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LoginSuccessResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "description": "Registers new user",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "summary": "Register API",
+        "parameters": [
+          {
+            "description": "User Data",
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRegister"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RegisterResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/refresh": {
+      "post": {
+        "description": "Refresh user's access token",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "summary": "Refresh API",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "JWT Refresh Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RefreshResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/profile": {
+      "get": {
+        "description": "Returns signed-in user's info",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "summary": "Profile API",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "JWT Access Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ProfileResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/get-data": {
+      "get": {
+        "description": "Returns list of user info with pagination",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "summary": "Data API",
+        "parameters": [
+          {
+            "type": "number",
+            "description": "Offset",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Limit",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "description": "Raw",
+            "name": "raw",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "JWT Access Token",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DataResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "DataResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UsersList"
+          }
+        },
+        "message": {
+          "type": "string",
+          "default": "ok"
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "LoginSuccessResponse": {
+      "type": "object",
+      "properties": {
+        "access": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string",
+          "default": "ok"
+        },
+        "refresh": {
+          "type": "string"
+        }
+      }
+    },
+    "ProfileResponse": {
+      "type": "object",
+      "properties": {
+        "aadhar": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string",
+          "default": "ok"
+        },
+        "user_name": {
+          "type": "string"
+        }
+      }
+    },
+    "RefreshResponse": {
+      "type": "object",
+      "properties": {
+        "access": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string",
+          "default": "ok"
+        }
+      }
+    },
+    "RegisterResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "default": "ok"
+        }
+      }
+    },
+    "UserLogin": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "user_name": {
+          "type": "string"
+        }
+      }
+    },
+    "UserRegister": {
+      "type": "object",
+      "properties": {
+        "aadhar": {
+          "type": "string"
+        },
+        "confirm_password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "user_name": {
+          "type": "string"
+        }
+      }
+    },
+    "UsersList": {
+      "type": "object",
+      "properties": {
+        "aadhar": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "user_name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
